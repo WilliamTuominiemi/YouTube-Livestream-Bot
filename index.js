@@ -4,7 +4,7 @@ const readline = require('readline')
 const { google } = require('googleapis')
 
 // If modifying these scopes, delete token.json.
-const SCOPES = ['https://www.googleapis.com/auth/youtube.readonly']
+const SCOPES = ['https://www.googleapis.com/auth/youtube.force-ssl']
 
 // The file token.json stores the user's access and refresh tokens, and is
 // created automatically when the authorization flow completes for the first
@@ -15,7 +15,7 @@ const TOKEN_PATH = 'token.json'
 fs.readFile('credentials.json', (err, content) => {
     if (err) return console.log('Error loading client secret file:', err)
     // Authorize a client with credentials, then call the Google Sheets API.
-    authorize(JSON.parse(content), getChannel)
+    authorize(JSON.parse(content), getComments)
 })
 
 const authorize = (credentials, callback) => {
@@ -55,13 +55,37 @@ const getNewToken = (oAuth2Client, callback) => {
     })
 }
 
+const getComments = (auth) => {
+    const service = google.youtube('v3')
+
+    const request = {
+        auth: auth,
+        part: 'id,replies,snippet',
+        videoId: 'DiKTifU1v1I',
+    }
+
+    service.commentThreads.list(request, (err, response) => {
+        if (err) return console.log('The API returned an error: ' + err)
+        const commentThreads = response.data.items
+        if (commentThreads.length == 0) {
+            console.log('No thread found.')
+        } else {
+            commentThreads.forEach((element) => {
+                console.log(
+                    `${element.snippet.topLevelComment.snippet.authorDisplayName} commented: ${element.snippet.topLevelComment.snippet.textDisplay}`
+                )
+            })
+        }
+    })
+}
+
 const getChannel = (auth) => {
     const service = google.youtube('v3')
 
     const request = {
         auth: auth,
         part: 'snippet,contentDetails,statistics',
-        id: 'UCbZRGXMhWPva6OZydKs70ng',
+        id: 'UCmDTrq0LNgPodDOFZiSbsww',
     }
 
     service.channels.list(request, (err, response) => {
