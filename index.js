@@ -6,9 +6,7 @@ var OAuth2 = google.auth.OAuth2;
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/youtube-nodejs-quickstart.json
 var SCOPES = ['https://www.googleapis.com/auth/youtube.readonly'];
-var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
-    process.env.USERPROFILE) + '/.credentials/';
-var TOKEN_PATH = TOKEN_DIR + 'youtube-nodejs-quickstart.json';
+const TOKEN_PATH = 'token.json'
 
 // Load client secrets from a local file.
 fs.readFile('credentials.json', function processClientSecrets(err, content) {
@@ -17,7 +15,7 @@ fs.readFile('credentials.json', function processClientSecrets(err, content) {
     return;
   }
   // Authorize a client with the loaded credentials, then call the YouTube API.
-  authorize(JSON.parse(content), getChannel);
+  authorize(JSON.parse(content), getChatMessages);
 });
 
 /**
@@ -28,20 +26,15 @@ fs.readFile('credentials.json', function processClientSecrets(err, content) {
  * @param {function} callback The callback to call with the authorized client.
  */
 function authorize(credentials, callback) {
-  var clientSecret = credentials.installed.client_secret;
-  var clientId = credentials.installed.client_id;
-  var redirectUrl = credentials.installed.redirect_uris[0];
-  var oauth2Client = new OAuth2(clientId, clientSecret, redirectUrl);
+  const {client_secret, client_id, redirect_uris} = credentials.installed
+  const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0])
 
   // Check if we have previously stored a token.
-  fs.readFile(TOKEN_PATH, function(err, token) {
-    if (err) {
-      getNewToken(oauth2Client, callback);
-    } else {
-      oauth2Client.credentials = JSON.parse(token);
-      callback(oauth2Client);
-    }
-  });
+  fs.readFile(TOKEN_PATH, (err, token) => {
+    if (err) return getNewToken(oAuth2Client, callback)
+    oAuth2Client.setCredentials(JSON.parse(token))
+    callback(oAuth2Client)
+  })
 }
 
 /**
@@ -52,28 +45,29 @@ function authorize(credentials, callback) {
  * @param {getEventsCallback} callback The callback to call with the authorized
  *     client.
  */
-function getNewToken(oauth2Client, callback) {
-  var authUrl = oauth2Client.generateAuthUrl({
+ const getNewToken = (oAuth2Client, callback) => {
+  const authUrl = oAuth2Client.generateAuthUrl({
     access_type: 'offline',
-    scope: SCOPES
-  });
-  console.log('Authorize this app by visiting this url: ', authUrl);
-  var rl = readline.createInterface({
+    scope: SCOPES,
+  })
+  console.log('Authorize this app by visiting this url:', authUrl)
+  const rl = readline.createInterface({
     input: process.stdin,
-    output: process.stdout
-  });
-  rl.question('Enter the code from that page here: ', function(code) {
-    rl.close();
-    oauth2Client.getToken(code, function(err, token) {
-      if (err) {
-        console.log('Error while trying to retrieve access token', err);
-        return;
-      }
-      oauth2Client.credentials = token;
-      storeToken(token);
-      callback(oauth2Client);
-    });
-  });
+    output: process.stdout,
+  })
+  rl.question('Enter the code from that page here: ', (code) => {
+    rl.close()
+    oAuth2Client.getToken(code, (err, token) => {
+      if (err) return console.error('Error while trying to retrieve access token', err)
+      oAuth2Client.setCredentials(token)
+      // Store the token to disk for later program executions
+      fs.writeFile(TOKEN_PATH, JSON.stringify(token), (err) => {
+        if (err) return console.error(err)
+        console.log('Token stored to', TOKEN_PATH)
+      })
+      callback(oAuth2Client)
+    })
+  })
 }
 
 /**
@@ -116,11 +110,32 @@ function getChannel(auth) {
     if (channels.length == 0) {
       console.log('No channel found.');
     } else {
-      console.log('This channel\'s ID is %s. Its title is \'%s\', and ' +
-                  'it has %s views.',
-                  channels[0].id,
-                  channels[0].snippet.title,
-                  channels[0].statistics.viewCount);
+      console.log(`This channel's ID is ${channels[0].id}. 
+      Its title is ${channels[0].snippet.title}, 
+      it has ${channels[0].statistics.viewCount} views and 
+      it has ${channels[0].statistics.subscriberCount} subscribers.`)
+    }
+  });
+}
+
+function getChatMessages(auth) {
+  var service = google.youtube('v3');
+  service.liveChatMessages.list({
+    auth: auth,
+    liveChatId: "FsYH7vTzUqI",
+    part: "snippet,authorDetails"
+  }, function(err, response) {
+    if (err) {
+      console.log('The API returned an error: ' + err);
+      return;
+    }
+    var liveChatMessages = response.data.items;
+    if (liveChatMessages.length == 0) {
+      console.log('No channel found.');
+    } else {
+      console.log(liveChatMessages)
+      // console.log(`Livestream id: ${liveChatMessages[0].liveChatId}. 
+      // Chat ${liveChatMessages[0].snippet}`)
     }
   });
 }
