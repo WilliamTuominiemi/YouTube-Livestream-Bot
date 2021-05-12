@@ -105,7 +105,8 @@ function getChannel(auth) {
   service.channels.list({
     auth: auth,
     part: 'snippet,contentDetails,statistics',
-    forUsername: 'GoogleDevelopers'
+    id: 'UCbZRGXMhWPva6OZydKs70ng'
+    // forUsername: 'GoogleDevelopers'
   }, function(err, response) {
     if (err) {
       console.log('The API returned an error: ' + err);
