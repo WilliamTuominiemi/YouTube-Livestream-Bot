@@ -15,7 +15,7 @@ const TOKEN_PATH = 'token.json'
 fs.readFile('credentials.json', (err, content) => {
     if (err) return console.log('Error loading client secret file:', err)
     // Authorize a client with credentials, then call the Google Sheets API.
-    authorize(JSON.parse(content), getComments)
+    authorize(JSON.parse(content), getBroadcast)
 })
 
 const authorize = (credentials, callback) => {
@@ -52,6 +52,24 @@ const getNewToken = (oAuth2Client, callback) => {
             })
             callback(oAuth2Client)
         })
+    })
+}
+
+const getBroadcast = (auth) => {
+    const service = google.youtube('v3')
+
+    const request = {
+        auth: auth,
+        part: 'id, snippet, contentDetails, status',
+        id: '21X5lGlDOfg',
+        PageToken: 'nextPageToken',
+    }
+
+    service.liveBroadcasts.list(request, (err, response) => {
+        if (err) return console.log('The API returned an error: ' + err)
+        const broadcasts = response.data.items
+        console.log(response)
+        console.log(broadcasts)
     })
 }
 
