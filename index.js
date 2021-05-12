@@ -11,12 +11,14 @@ const SCOPES = ['https://www.googleapis.com/auth/youtube.force-ssl']
 // time.
 const TOKEN_PATH = 'token.json'
 
-// Load client secrets from a local file.
-fs.readFile('credentials.json', (err, content) => {
-    if (err) return console.log('Error loading client secret file:', err)
-    // Authorize a client with credentials, then call the Google Sheets API.
-    authorize(JSON.parse(content), getBroadcast)
-})
+const start_function = (callback) => {
+    // Load client secrets from a local file.
+    fs.readFile('credentials.json', (err, content) => {
+        if (err) return console.log('Error loading client secret file:', err)
+        // Authorize a client with credentials, then call the Google Sheets API.
+        authorize(JSON.parse(content), callback)
+    })
+}
 
 const authorize = (credentials, callback) => {
     const { client_secret, client_id, redirect_uris } = credentials.installed
@@ -112,10 +114,13 @@ const getChannel = (auth) => {
         if (channels.length == 0) {
             console.log('No channel found.')
         } else {
-            console.log(`This channel's ID is ${channels[0].id}. 
-            Its title is ${channels[0].snippet.title}, 
-            it has ${channels[0].statistics.viewCount} views and 
+            console.log(`This channel's ID is ${channels[0].id}.
+            Its title is ${channels[0].snippet.title},
+            it has ${channels[0].statistics.viewCount} views and
             it has ${channels[0].statistics.subscriberCount} subscribers.`)
         }
     })
 }
+
+start_function(getChannel)
+// start_function(getComments)
