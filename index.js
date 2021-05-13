@@ -63,7 +63,7 @@ const getBroadcast = (auth) => {
     const request = {
         auth: auth,
         part: 'id, snippet, contentDetails, status',
-        id: '21X5lGlDOfg',
+        id: 'c1K2ZiBuVaA',
         PageToken: 'nextPageToken',
     }
 
@@ -73,6 +73,23 @@ const getBroadcast = (auth) => {
         console.log(response)
         console.log(broadcasts)
     })
+}
+
+const getChat = (auth) => {
+  const service = google.youtube('v3')
+
+  const request = {
+      auth: auth,
+      part: 'id, snippet, authorDetails',
+      liveChatId: 'KicKGFVDYlpSR1hNaFdQdmE2T1p5ZEtzNzBuZxILYzFLMlppQnVWYUE',
+      PageToken: 'nextPageToken',
+  }
+
+  service.liveChatMessages.list(request, (err, response) => {
+      if (err) return console.log('The API returned an error: ' + err)
+      const broadcasts = response.data.items
+      console.log(broadcasts)
+  })
 }
 
 const getComments = (auth) => {
@@ -122,5 +139,5 @@ const getChannel = (auth) => {
     })
 }
 
-start_function(getChannel)
+start_function(getChat)
 // start_function(getComments)
