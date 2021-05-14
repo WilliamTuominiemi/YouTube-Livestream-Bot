@@ -98,8 +98,13 @@ const getBroadcast = (auth) => {
 }
 
 const commands = (command) => {
-    if (command === '/help') {
-        console.log('command: /help')
+    switch (command) {
+        case '/help':
+            console.log('command: /help')
+            break
+        default:
+            console.log('invalid command')
+            break
     }
 }
 
@@ -150,5 +155,5 @@ const getChannel = (auth) => {
     })
 }
 
-start_function(getBroadcast)
+// start_function(getBroadcast)
 // start_function(getComments)
