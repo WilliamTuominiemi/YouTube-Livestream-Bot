@@ -83,7 +83,9 @@ const getBroadcast = (auth) => {
             if (err) return console.log('The API returned an error: ' + err)
             const messages = response.data.items
             messages.forEach((message) => {
+                const sentAt = new Date(message.snippet.publishedAt)
                 console.log(`${message.authorDetails.displayName} said "${message.snippet.displayMessage}"`)
+                console.log(sentAt)
             })
         })
     })
