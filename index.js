@@ -154,27 +154,38 @@ const sendMessage = (auth, message) => {
 }
 
 const getChannel = (auth) => {
-    const service = google.youtube('v3')
+    fs.readFile('credentials.json', (err, content) => {
+        if (err) return console.log('Error loading client secret file:', err)
+        const { client_secret, client_id, redirect_uris } = JSON.parse(content).installed
+        const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0])
+        fs.readFile(TOKEN_PATH, (err, token) => {
+            if (err) return getNewToken(oAuth2Client, callback)
+            oAuth2Client.setCredentials(JSON.parse(token))
+            const service = google.youtube('v3')
 
-    const request = {
-        auth: auth,
-        part: 'snippet,contentDetails,statistics',
-        id: 'UCmDTrq0LNgPodDOFZiSbsww',
-    }
+            const request = {
+                auth: oAuth2Client,
+                part: 'snippet,contentDetails,statistics',
+                id: 'UCmDTrq0LNgPodDOFZiSbsww',
+            }
 
-    service.channels.list(request, (err, response) => {
-        if (err) return console.log('The API returned an error: ' + err)
-        const channels = response.data.items
-        if (channels.length == 0) {
-            console.log('No channel found.')
-        } else {
-            console.log(`This channel's ID is ${channels[0].id}.
-            Its title is ${channels[0].snippet.title},
-            it has ${channels[0].statistics.viewCount} views and
-            it has ${channels[0].statistics.subscriberCount} subscribers.`)
-        }
+            service.channels.list(request, (err, response) => {
+                if (err) return console.log('The API returned an error: ' + err)
+                const channels = response.data.items
+                if (channels.length == 0) {
+                    console.log('No channel found.')
+                } else {
+                    console.log(`This channel's ID is ${channels[0].id}.
+                Its title is ${channels[0].snippet.title},
+                it has ${channels[0].statistics.viewCount} views and
+                it has ${channels[0].statistics.subscriberCount} subscribers.`)
+                }
+            })
+        })
     })
 }
+
+getChannel()
 
 // start_function(getBroadcast)
 // start_function(getComments)
