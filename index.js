@@ -89,12 +89,18 @@ const getBroadcast = (auth) => {
                 console.log(
                     `${message.authorDetails.displayName} said "${message.snippet.displayMessage}" ${diffMins} minutes ago`
                 )
-                if (message.snippet.displayMessage.indexOf('!') > -1) {
-                    console.log('command')
+                if (message.snippet.displayMessage.indexOf('/') > -1) {
+                    commands(message.snippet.displayMessage)
                 }
             })
         })
     })
+}
+
+const commands = (command) => {
+    if (command === '/help') {
+        console.log('command: /help')
+    }
 }
 
 const getComments = (auth) => {
