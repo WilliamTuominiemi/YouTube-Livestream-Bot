@@ -84,8 +84,11 @@ const getBroadcast = (auth) => {
             const messages = response.data.items
             messages.forEach((message) => {
                 const sentAt = new Date(message.snippet.publishedAt)
-                console.log(`${message.authorDetails.displayName} said "${message.snippet.displayMessage}"`)
-                console.log(sentAt)
+                const diff = new Date() - sentAt
+                var diffMins = Math.round(((diff % 86400000) % 3600000) / 60000)
+                console.log(
+                    `${message.authorDetails.displayName} said "${message.snippet.displayMessage}" ${diffMins} minutes ago`
+                )
             })
         })
     })
