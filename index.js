@@ -63,26 +63,28 @@ const getBroadcast = (auth) => {
     const request = {
         auth: auth,
         part: 'id, snippet, contentDetails, status',
-        id: 'c1K2ZiBuVaA',
+        id: 'DTfdw6bbv2A',
         PageToken: 'nextPageToken',
     }
 
     service.liveBroadcasts.list(request, (err, response) => {
         if (err) return console.log('The API returned an error: ' + err)
-        const broadcasts = response.data.items
-        console.log(response)
+        const broadcast = response.data.items[0]
+        console.log(`${broadcast.snippet.channelId} is livestreaming about ${broadcast.snippet.title}`)
 
         const chatRequest = {
             auth: auth,
             part: 'id, snippet, authorDetails',
-            liveChatId: broadcasts,
+            liveChatId: broadcast.snippet.liveChatId,
             PageToken: 'nextPageToken',
         }
 
         service.liveChatMessages.list(chatRequest, (err, response) => {
             if (err) return console.log('The API returned an error: ' + err)
-            const broadcasts = response.data.items
-            console.log(broadcasts)
+            const messages = response.data.items
+            messages.forEach((message) => {
+                console.log(`${message.authorDetails.displayName} said "${message.snippet.displayMessage}"`)
+            })
         })
     })
 }
