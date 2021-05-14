@@ -132,6 +132,27 @@ const getComments = (auth) => {
     })
 }
 
+const sendMessage = (auth, message) => {
+    const service = google.youtube('v3')
+
+    const request = {
+        auth: auth,
+        part: 'snippet',
+        snippet: {
+            type: textMessageEvent,
+            liveChatId: 'UCmDTrq0LNgPodDOFZiSbsww',
+            textMessageDetails: {
+                messageText: message,
+            },
+        },
+    }
+
+    service.liveChatMessages.list(request, (err, response) => {
+        if (err) return console.log('The API returned an error: ' + err)
+        console.log(response.data.items)
+    })
+}
+
 const getChannel = (auth) => {
     const service = google.youtube('v3')
 
