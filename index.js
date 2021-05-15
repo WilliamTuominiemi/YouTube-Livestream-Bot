@@ -86,11 +86,12 @@ const getBroadcast = (auth) => {
                 const sentAt = new Date(message.snippet.publishedAt)
                 const diff = new Date() - sentAt
                 var diffMins = Math.round(((diff % 86400000) % 3600000) / 60000)
-                console.log(
-                    `${message.authorDetails.displayName} said "${message.snippet.displayMessage}" ${diffMins} minutes ago`
-                )
-                if (message.snippet.displayMessage.indexOf('/') > -1 && diffMins < 1) {
-                    commands(message.snippet.displayMessage, broadcast.snippet.liveChatId)
+                // console.log(
+                //     `${message.authorDetails.displayName} said "${message.snippet.displayMessage}" ${diffMins} minutes ago`
+                // )
+                if (message.snippet.displayMessage.startsWith('/') ) {
+                    console.log(message.snippet.displayMessage)
+                    // commands(message.snippet.displayMessage, broadcast.snippet.liveChatId)
                 }
             })
         })
@@ -98,7 +99,7 @@ const getBroadcast = (auth) => {
 }
 
 const commands = (command, chatId) => {
-    const commands = ['/help', '/stats', '/socials']
+    const commands = ['/help', '/stats', '/discord']
     const _channel = getChannel('UCbZRGXMhWPva6OZydKs70ng')
     switch (command) {
         case '/help':
