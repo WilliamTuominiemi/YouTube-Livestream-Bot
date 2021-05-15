@@ -63,8 +63,8 @@ const getBroadcast = (auth) => {
     const request = {
         auth: auth,
         part: 'id, snippet, contentDetails, status',
-        id: 'DTfdw6bbv2A',
-        PageToken: 'nextPageToken',
+        id: 'ndK8kzxZg7I',
+        // PageToken: 'nextPageToken',
     }
 
     service.liveBroadcasts.list(request, (err, response) => {
@@ -102,7 +102,7 @@ const commands = (command, chatId) => {
     switch (command) {
         case '/help':
             console.log('command: /help')
-            sendMessage(`Available commands: ${commands}`)
+            sendMessage(`Available commands: ${commands}`, chatId)
             break
         default:
             console.log('invalid command')
@@ -143,23 +143,28 @@ const sendMessage = (message, chatId) => {
             if (err) return getNewToken(oAuth2Client, callback)
             oAuth2Client.setCredentials(JSON.parse(token))
 
+            console.log(chatId)
+            
             const service = google.youtube('v3')
 
             const request = {
                 auth: oAuth2Client,
-                part: 'snippet',
-                snippet: {
-                    type: textMessageEvent,
-                    liveChatId: chatId,
-                    textMessageDetails: {
-                        messageText: message,
+                part: ['snippet'],
+                resource: {
+                    snippet: {
+                        liveChatId: chatId,
+                        type: 'textMessageEvent',
+                        textMessageDetails: {
+                            messageText: message,
+                        },
                     },
-                },
+                }
+                
             }
 
-            service.liveChatMessages.list(request, (err, response) => {
+            service.liveChatMessages.insert(request, (err, response) => {
                 if (err) return console.log('The API returned an error: ' + err)
-                console.log(response.data.items)
+                console.log(response.data)
             })
         })
     })
@@ -197,6 +202,9 @@ const getChannel = () => {
     }) 
     
 }
-start_function(getChannel)
-// start_function(getBroadcast)
+
+// getChannel()
+
+// start_function(getChannel)
+start_function(getBroadcast)
 // start_function(getComments)
