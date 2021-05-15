@@ -63,7 +63,7 @@ const getBroadcast = (auth) => {
     const request = {
         auth: auth,
         part: 'id, snippet, contentDetails, status',
-        id: 'ndK8kzxZg7I',
+        id: 'SHwKywDc978',
         // PageToken: 'nextPageToken',
     }
 
@@ -103,6 +103,15 @@ const commands = (command, chatId) => {
         case '/help':
             console.log('command: /help')
             sendMessage(`Available commands: ${commands}`, chatId)
+            break
+        case '/stats':
+            console.log('command: /help')
+            const _channel = getChannel('UCbZRGXMhWPva6OZydKs70ng')
+            setTimeout(function(){ console.log(channel) }, 3000);
+            setTimeout(function(){ sendMessage(`This channel's ID is ${channel.id}.
+            Its title is ${channel.snippet.title},
+            it has ${channel.statistics.viewCount} views and
+            it has ${channel.statistics.subscriberCount} subscribers.`, chatId) }, 3000);
             break
         default:
             console.log('invalid command')
@@ -170,37 +179,40 @@ const sendMessage = (message, chatId) => {
     })
 }
 
-const getChannel = () => {
-    fs.readFile('credentials.json', (err, content) => {
-        if (err) return console.log('Error loading client secret file:', err)
-        const { client_secret, client_id, redirect_uris } = JSON.parse(content).installed
-        const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0])
-        fs.readFile(TOKEN_PATH, (err, token) => {
-            if (err) return getNewToken(oAuth2Client, callback)
-            oAuth2Client.setCredentials(JSON.parse(token))            
-            const service = google.youtube('v3')
-
-            const request = {
-                auth: oAuth2Client,
-                part: 'snippet,contentDetails,statistics',
-                id: 'UCmDTrq0LNgPodDOFZiSbsww',
-            }
-
-            service.channels.list(request, (err, response) => {
-                if (err) return console.log('The API returned an error: ' + err)
-                const channels = response.data.items
-                if (channels.length == 0) {
-                    console.log('No channel found.')
-                } else {
-                    console.log(`This channel's ID is ${channels[0].id}.
-                        Its title is ${channels[0].snippet.title},
-                        it has ${channels[0].statistics.viewCount} views and
-                        it has ${channels[0].statistics.subscriberCount} subscribers.`)
-                }
-            })
-        })
-    }) 
+const getChannel = (channelId) => {
+    return new Promise(function(resolve, reject) {
+        fs.readFile('credentials.json', (err, content) => {
+            if (err) return console.log('Error loading client secret file:', err)
+            const { client_secret, client_id, redirect_uris } = JSON.parse(content).installed
+            const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0])
+            fs.readFile(TOKEN_PATH, (err, token) => {
+                if (err) return getNewToken(oAuth2Client, callback)
+                oAuth2Client.setCredentials(JSON.parse(token))            
+                const service = google.youtube('v3')
     
+                const request = {
+                    auth: oAuth2Client,
+                    part: 'snippet,contentDetails,statistics',
+                    id: channelId,
+                }
+    
+                service.channels.list(request, (err, response) => {
+                    if (err) return reject('The API returned an error: ' + err)
+                    const channels = response.data.items
+                    if (channels.length == 0) {
+                        console.log('No channel found.')
+                    } else {
+                        this.channel = channels[0]
+                        console.log(`This channel's ID is ${channels[0].id}.
+                            Its title is ${channels[0].snippet.title},
+                            it has ${channels[0].statistics.viewCount} views and
+                            it has ${channels[0].statistics.subscriberCount} subscribers.`)
+                        resolve(this)
+                    }
+                })
+            })
+        }) 
+    });
 }
 
 // getChannel()
