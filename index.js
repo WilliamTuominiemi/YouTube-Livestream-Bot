@@ -98,9 +98,11 @@ const getBroadcast = (auth) => {
 }
 
 const commands = (command) => {
+    const commands = ['/help']
     switch (command) {
         case '/help':
             console.log('command: /help')
+            sendMessage(`Available commands: ${commands}`)
             break
         default:
             console.log('invalid command')
@@ -133,27 +135,6 @@ const getComments = (auth) => {
 }
 
 const sendMessage = (auth, message) => {
-    const service = google.youtube('v3')
-
-    const request = {
-        auth: auth,
-        part: 'snippet',
-        snippet: {
-            type: textMessageEvent,
-            liveChatId: 'UCmDTrq0LNgPodDOFZiSbsww',
-            textMessageDetails: {
-                messageText: message,
-            },
-        },
-    }
-
-    service.liveChatMessages.list(request, (err, response) => {
-        if (err) return console.log('The API returned an error: ' + err)
-        console.log(response.data.items)
-    })
-}
-
-const getChannel = (auth) => {
     fs.readFile('credentials.json', (err, content) => {
         if (err) return console.log('Error loading client secret file:', err)
         const { client_secret, client_id, redirect_uris } = JSON.parse(content).installed
@@ -161,31 +142,71 @@ const getChannel = (auth) => {
         fs.readFile(TOKEN_PATH, (err, token) => {
             if (err) return getNewToken(oAuth2Client, callback)
             oAuth2Client.setCredentials(JSON.parse(token))
+
             const service = google.youtube('v3')
 
             const request = {
-                auth: oAuth2Client,
-                part: 'snippet,contentDetails,statistics',
-                id: 'UCmDTrq0LNgPodDOFZiSbsww',
+                auth: auth,
+                part: 'snippet',
+                snippet: {
+                    type: textMessageEvent,
+                    liveChatId: 'UCmDTrq0LNgPodDOFZiSbsww',
+                    textMessageDetails: {
+                        messageText: message,
+                    },
+                },
             }
 
-            service.channels.list(request, (err, response) => {
+            service.liveChatMessages.list(request, (err, response) => {
                 if (err) return console.log('The API returned an error: ' + err)
-                const channels = response.data.items
-                if (channels.length == 0) {
-                    console.log('No channel found.')
-                } else {
-                    console.log(`This channel's ID is ${channels[0].id}.
-                Its title is ${channels[0].snippet.title},
-                it has ${channels[0].statistics.viewCount} views and
-                it has ${channels[0].statistics.subscriberCount} subscribers.`)
-                }
+                console.log(response.data.items)
             })
         })
     })
 }
 
-getChannel()
+const auth = () => {
+    fs.readFile('credentials.json', (err, content) => {
+        if (err) return console.log('Error loading client secret file:', err)
+        const { client_secret, client_id, redirect_uris } = JSON.parse(content).installed
+        const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0])
+        fs.readFile(TOKEN_PATH, (err, token) => {
+            if (err) return getNewToken(oAuth2Client, callback)
+            oAuth2Client.setCredentials(JSON.parse(token))
+            console.log()
+            return oAuth2Client
+        })
+    })
+}
+
+const getChannel = () => {
+    const service = google.youtube('v3')
+
+    console.log(_auth)
+
+    const request = {
+        auth: _auth,
+        part: 'snippet,contentDetails,statistics',
+        id: 'UCmDTrq0LNgPodDOFZiSbsww',
+    }
+
+    service.channels.list(request, (err, response) => {
+        if (err) return console.log('The API returned an error: ' + err)
+        const channels = response.data.items
+        if (channels.length == 0) {
+            console.log('No channel found.')
+        } else {
+            console.log(`This channel's ID is ${channels[0].id}.
+                Its title is ${channels[0].snippet.title},
+                it has ${channels[0].statistics.viewCount} views and
+                it has ${channels[0].statistics.subscriberCount} subscribers.`)
+        }
+    })
+}
+
+const _auth = auth()
+
+setTimeout(getChannel, 3000)
 
 // start_function(getBroadcast)
 // start_function(getComments)
