@@ -89,9 +89,8 @@ const getBroadcast = (auth) => {
                 // console.log(
                 //     `${message.authorDetails.displayName} said "${message.snippet.displayMessage}" ${diffMins} minutes ago`
                 // )
-                if (message.snippet.displayMessage.startsWith('/') ) {
-                    console.log(message.snippet.displayMessage)
-                    // commands(message.snippet.displayMessage, broadcast.snippet.liveChatId)
+                if (message.snippet.displayMessage.startsWith('/') && diffMins < 1) {
+                    commands(message.snippet.displayMessage, broadcast.snippet.liveChatId)
                 }
             })
         })
@@ -99,7 +98,7 @@ const getBroadcast = (auth) => {
 }
 
 const commands = (command, chatId) => {
-    const commands = ['/help', '/stats', '/discord']
+    const commands = ['/help', '/stats', '/dc']
     const _channel = getChannel('UCbZRGXMhWPva6OZydKs70ng')
     switch (command) {
         case '/help':
@@ -112,6 +111,9 @@ const commands = (command, chatId) => {
             Viewcount: ${channel.statistics.viewCount} • \n
             Videos: ${channel.statistics.videoCount} \n
             `, chatId) }, 3000);
+            break
+        case '/dc':
+            setTimeout(function(){ sendMessage(`💬 ᴅɪꜱᴄᴏʀᴅ ꜱᴇʀᴠᴇʀ: https://shorturl.at/lmyLN`, chatId) }, 3000);
             break
         default:
             console.log('invalid command')
@@ -203,10 +205,10 @@ const getChannel = (channelId) => {
                         console.log('No channel found.')
                     } else {
                         this.channel = channels[0]
-                        console.log(`This channel's ID is ${channels[0].id}.
-                            Its title is ${channels[0].snippet.title},
-                            it has ${channels[0].statistics.viewCount} views and
-                            it has ${channels[0].statistics.subscriberCount} subscribers.`)
+                        // console.log(`This channel's ID is ${channels[0].id}.
+                        //     Its title is ${channels[0].snippet.title},
+                        //     it has ${channels[0].statistics.viewCount} views and
+                        //     it has ${channels[0].statistics.subscriberCount} subscribers.`)
                         resolve(this)
                     }
                 })
