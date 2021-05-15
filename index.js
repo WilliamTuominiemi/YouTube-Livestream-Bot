@@ -90,14 +90,14 @@ const getBroadcast = (auth) => {
                     `${message.authorDetails.displayName} said "${message.snippet.displayMessage}" ${diffMins} minutes ago`
                 )
                 if (message.snippet.displayMessage.indexOf('/') > -1) {
-                    commands(message.snippet.displayMessage)
+                    commands(message.snippet.displayMessage, broadcast.snippet.liveChatId)
                 }
             })
         })
     })
 }
 
-const commands = (command) => {
+const commands = (command, chatId) => {
     const commands = ['/help']
     switch (command) {
         case '/help':
@@ -134,7 +134,7 @@ const getComments = (auth) => {
     })
 }
 
-const sendMessage = (auth, message) => {
+const sendMessage = (message, chatId) => {
     fs.readFile('credentials.json', (err, content) => {
         if (err) return console.log('Error loading client secret file:', err)
         const { client_secret, client_id, redirect_uris } = JSON.parse(content).installed
@@ -146,11 +146,11 @@ const sendMessage = (auth, message) => {
             const service = google.youtube('v3')
 
             const request = {
-                auth: auth,
+                auth: oAuth2Client,
                 part: 'snippet',
                 snippet: {
                     type: textMessageEvent,
-                    liveChatId: 'UCmDTrq0LNgPodDOFZiSbsww',
+                    liveChatId: chatId,
                     textMessageDetails: {
                         messageText: message,
                     },
@@ -165,48 +165,38 @@ const sendMessage = (auth, message) => {
     })
 }
 
-const auth = () => {
+const getChannel = () => {
     fs.readFile('credentials.json', (err, content) => {
         if (err) return console.log('Error loading client secret file:', err)
         const { client_secret, client_id, redirect_uris } = JSON.parse(content).installed
         const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0])
         fs.readFile(TOKEN_PATH, (err, token) => {
             if (err) return getNewToken(oAuth2Client, callback)
-            oAuth2Client.setCredentials(JSON.parse(token))
-            console.log()
-            return oAuth2Client
+            oAuth2Client.setCredentials(JSON.parse(token))            
+            const service = google.youtube('v3')
+
+            const request = {
+                auth: oAuth2Client,
+                part: 'snippet,contentDetails,statistics',
+                id: 'UCmDTrq0LNgPodDOFZiSbsww',
+            }
+
+            service.channels.list(request, (err, response) => {
+                if (err) return console.log('The API returned an error: ' + err)
+                const channels = response.data.items
+                if (channels.length == 0) {
+                    console.log('No channel found.')
+                } else {
+                    console.log(`This channel's ID is ${channels[0].id}.
+                        Its title is ${channels[0].snippet.title},
+                        it has ${channels[0].statistics.viewCount} views and
+                        it has ${channels[0].statistics.subscriberCount} subscribers.`)
+                }
+            })
         })
-    })
+    }) 
+    
 }
-
-const getChannel = () => {
-    const service = google.youtube('v3')
-
-    console.log(_auth)
-
-    const request = {
-        auth: _auth,
-        part: 'snippet,contentDetails,statistics',
-        id: 'UCmDTrq0LNgPodDOFZiSbsww',
-    }
-
-    service.channels.list(request, (err, response) => {
-        if (err) return console.log('The API returned an error: ' + err)
-        const channels = response.data.items
-        if (channels.length == 0) {
-            console.log('No channel found.')
-        } else {
-            console.log(`This channel's ID is ${channels[0].id}.
-                Its title is ${channels[0].snippet.title},
-                it has ${channels[0].statistics.viewCount} views and
-                it has ${channels[0].statistics.subscriberCount} subscribers.`)
-        }
-    })
-}
-
-const _auth = auth()
-
-setTimeout(getChannel, 3000)
-
+start_function(getChannel)
 // start_function(getBroadcast)
 // start_function(getComments)
