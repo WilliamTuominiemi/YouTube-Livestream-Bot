@@ -89,7 +89,7 @@ const getBroadcast = (auth) => {
                 console.log(
                     `${message.authorDetails.displayName} said "${message.snippet.displayMessage}" ${diffMins} minutes ago`
                 )
-                if (message.snippet.displayMessage.indexOf('/') > -1) {
+                if (message.snippet.displayMessage.indexOf('/') > -1 && diffMins < 1) {
                     commands(message.snippet.displayMessage, broadcast.snippet.liveChatId)
                 }
             })
@@ -98,20 +98,19 @@ const getBroadcast = (auth) => {
 }
 
 const commands = (command, chatId) => {
-    const commands = ['/help']
+    const commands = ['/help', '/stats', '/socials']
+    const _channel = getChannel('UCbZRGXMhWPva6OZydKs70ng')
     switch (command) {
         case '/help':
-            console.log('command: /help')
             sendMessage(`Available commands: ${commands}`, chatId)
             break
         case '/stats':
-            console.log('command: /help')
-            const _channel = getChannel('UCbZRGXMhWPva6OZydKs70ng')
-            setTimeout(function(){ console.log(channel) }, 3000);
-            setTimeout(function(){ sendMessage(`This channel's ID is ${channel.id}.
-            Its title is ${channel.snippet.title},
-            it has ${channel.statistics.viewCount} views and
-            it has ${channel.statistics.subscriberCount} subscribers.`, chatId) }, 3000);
+            setTimeout(function(){ sendMessage(`
+            Name: ${channel.snippet.title} • \n
+            Subscribers: ${channel.statistics.subscriberCount} • \n
+            Viewcount: ${channel.statistics.viewCount} • \n
+            Videos: ${channel.statistics.videoCount} \n
+            `, chatId) }, 3000);
             break
         default:
             console.log('invalid command')
