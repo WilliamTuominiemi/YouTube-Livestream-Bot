@@ -1,3 +1,7 @@
+const express = require('express')
+const app = express()
+const port = 3000
+
 const fs = require('fs')
 
 const readline = require('readline')
@@ -220,5 +224,14 @@ const getChannel = (channelId) => {
 // getChannel()
 
 // start_function(getChannel)
-start_function(getBroadcast)
+// start_function(getBroadcast)
 // start_function(getComments)
+
+app.get('/', (req, res) => {
+    const _channel = getChannel('UCbZRGXMhWPva6OZydKs70ng')
+    setTimeout(function(){ res.send(channel.statistics.subscriberCount) }, 1000);
+})
+  
+app.listen(port, () => {
+    console.log(`Example app listening at http://localhost:${port}`)
+})
