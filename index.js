@@ -1,6 +1,14 @@
 const express = require('express')
+const bodyParser = require('body-parser')
+
 const app = express()
 const port = 3000
+
+app.set('view engine', 'ejs')
+
+app.use(express.static('public'))
+
+app.use(bodyParser.json())
 
 const fs = require('fs')
 
@@ -229,7 +237,7 @@ const getChannel = (channelId) => {
 
 app.get('/', (req, res) => {
     const _channel = getChannel('UCbZRGXMhWPva6OZydKs70ng')
-    setTimeout(function(){ res.send(channel.statistics.subscriberCount) }, 1000);
+    setTimeout(function(){ res.render('subscriberCount', { subscribers: channel.statistics.subscriberCount })}, 1000);
 })
   
 app.listen(port, () => {
