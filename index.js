@@ -117,15 +117,22 @@ const commands = (command, chatId) => {
             sendMessage(`Available commands: ${commands}`, chatId)
             break
         case '/stats':
-            setTimeout(function(){ sendMessage(`
+            setTimeout(function () {
+                sendMessage(
+                    `
             Name: ${channel.snippet.title} • \n
             Subscribers: ${channel.statistics.subscriberCount} • \n
             Viewcount: ${channel.statistics.viewCount} • \n
             Videos: ${channel.statistics.videoCount} \n
-            `, chatId) }, 3000);
+            `,
+                    chatId
+                )
+            }, 3000)
             break
         case '/dc':
-            setTimeout(function(){ sendMessage(`💬 ᴅɪꜱᴄᴏʀᴅ ꜱᴇʀᴠᴇʀ: https://shorturl.at/lmyLN`, chatId) }, 3000);
+            setTimeout(function () {
+                sendMessage(`💬 ᴅɪꜱᴄᴏʀᴅ ꜱᴇʀᴠᴇʀ: https://shorturl.at/lmyLN`, chatId)
+            }, 3000)
             break
         default:
             console.log('invalid command')
@@ -167,7 +174,7 @@ const sendMessage = (message, chatId) => {
             oAuth2Client.setCredentials(JSON.parse(token))
 
             console.log(chatId)
-            
+
             const service = google.youtube('v3')
 
             const request = {
@@ -181,8 +188,7 @@ const sendMessage = (message, chatId) => {
                             messageText: message,
                         },
                     },
-                }
-                
+                },
             }
 
             service.liveChatMessages.insert(request, (err, response) => {
@@ -194,22 +200,22 @@ const sendMessage = (message, chatId) => {
 }
 
 const getChannel = (channelId) => {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         fs.readFile('credentials.json', (err, content) => {
             if (err) return console.log('Error loading client secret file:', err)
             const { client_secret, client_id, redirect_uris } = JSON.parse(content).installed
             const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0])
             fs.readFile(TOKEN_PATH, (err, token) => {
                 if (err) return getNewToken(oAuth2Client, callback)
-                oAuth2Client.setCredentials(JSON.parse(token))            
+                oAuth2Client.setCredentials(JSON.parse(token))
                 const service = google.youtube('v3')
-    
+
                 const request = {
                     auth: oAuth2Client,
                     part: 'snippet,contentDetails,statistics',
                     id: channelId,
                 }
-    
+
                 service.channels.list(request, (err, response) => {
                     if (err) return reject('The API returned an error: ' + err)
                     const channels = response.data.items
@@ -225,8 +231,8 @@ const getChannel = (channelId) => {
                     }
                 })
             })
-        }) 
-    });
+        })
+    })
 }
 
 // getChannel()
@@ -237,9 +243,11 @@ const getChannel = (channelId) => {
 
 app.get('/', (req, res) => {
     const _channel = getChannel('UCbZRGXMhWPva6OZydKs70ng')
-    setTimeout(function(){ res.render('subscriberCount', { subscribers: channel.statistics.subscriberCount })}, 1000);
+    setTimeout(function () {
+        res.render('subscriberCount', { subscribers: channel.statistics.subscriberCount })
+    }, 1000)
 })
-  
+
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
 })
