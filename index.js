@@ -101,16 +101,17 @@ const getBroadcast = (auth) => {
                 // console.log(
                 //     `${message.authorDetails.displayName} said "${message.snippet.displayMessage}" ${diffMins} minutes ago`
                 // )
-                if (message.snippet.displayMessage.startsWith('/') && diffMins < 1) {
+                if (message.snippet.displayMessage.startsWith('/') && diffMins < 0.5) {
                     commands(message.snippet.displayMessage, broadcast.snippet.liveChatId)
                 }
             })
+            setTimeout(function(){ start_function(getBroadcast) }, 30000);
         })
     })
 }
 
 const commands = (command, chatId) => {
-    const commands = ['/help', '/stats', '/dc']
+    const commands = [' /help', ' /stats', ' /dc']
     const _channel = getChannel('UCbZRGXMhWPva6OZydKs70ng')
     switch (command) {
         case '/help':
@@ -232,7 +233,7 @@ const getChannel = (channelId) => {
 // getChannel()
 
 // start_function(getChannel)
-// start_function(getBroadcast)
+start_function(getBroadcast)
 // start_function(getComments)
 
 app.get('/', (req, res) => {
