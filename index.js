@@ -49,11 +49,14 @@ const getNewToken = (oAuth2Client, callback) => {
         access_type: 'offline',
         scope: SCOPES,
     })
+    
     console.log('Authorize this app by visiting this url:', authUrl)
+    
     const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout,
     })
+    
     rl.question('Enter the code from that page here: ', (code) => {
         rl.close()
         oAuth2Client.getToken(code, (err, token) => {
@@ -72,18 +75,19 @@ const getNewToken = (oAuth2Client, callback) => {
 const getBroadcast = (auth) => {
     const service = google.youtube('v3')
 
+    // GET Broadcast request
     const request = {
         auth: auth,
         part: 'id, snippet, contentDetails, status',
         id: 'SHwKywDc978',
-        // PageToken: 'nextPageToken',
     }
 
     service.liveBroadcasts.list(request, (err, response) => {
         if (err) return console.log('The API returned an error: ' + err)
         const broadcast = response.data.items[0]
         console.log(`${broadcast.snippet.channelId} is livestreaming about ${broadcast.snippet.title}`)
-
+        
+        // GET Chat Messages request
         const chatRequest = {
             auth: auth,
             part: 'id, snippet, authorDetails',
@@ -95,29 +99,33 @@ const getBroadcast = (auth) => {
             if (err) return console.log('The API returned an error: ' + err)
             const messages = response.data.items
             messages.forEach((message) => {
+                // Get message age
                 const sentAt = new Date(message.snippet.publishedAt)
                 const diff = new Date() - sentAt
                 var diffMins = Math.round(((diff % 86400000) % 3600000) / 60000)
-                // console.log(
-                //     `${message.authorDetails.displayName} said "${message.snippet.displayMessage}" ${diffMins} minutes ago`
-                // )
+                // console.log(`${message.authorDetails.displayName} said "${message.snippet.displayMessage}" ${diffMins} minutes ago`
+
+                // Check if message is command and if it has already been processed
                 if (message.snippet.displayMessage.startsWith('/') && diffMins < 0.5) {
                     commands(message.snippet.displayMessage, broadcast.snippet.liveChatId)
                 }
             })
-            setTimeout(function(){ start_function(getBroadcast) }, 30000);
+            setTimeout(function(){ start_function(getBroadcast) }, 30000); // Check chat for commands every 30 seconds
         })
     })
 }
 
+// Command logic
 const commands = (command, chatId) => {
     const commands = [' /help', ' /stats', ' /dc']
-    const _channel = getChannel('UCbZRGXMhWPva6OZydKs70ng')
+    const _channel = getChannel('UCbZRGXMhWPva6OZydKs70ng') // Get channel information
     switch (command) {
         case '/help':
+            // Send list of commands
             sendMessage(`Available commands: ${commands}`, chatId)
             break
         case '/stats':
+            // Send channel stats
             setTimeout(function () {
                 sendMessage(
                     `
@@ -131,41 +139,21 @@ const commands = (command, chatId) => {
             }, 3000)
             break
         case '/dc':
+            // Send discord server
             setTimeout(function () {
                 sendMessage(`💬 ᴅɪꜱᴄᴏʀᴅ ꜱᴇʀᴠᴇʀ: https://shorturl.at/lmyLN`, chatId)
             }, 3000)
             break
         default:
+            // Not a valid command
             console.log('invalid command')
             break
     }
 }
 
-const getComments = (auth) => {
-    const service = google.youtube('v3')
-
-    const request = {
-        auth: auth,
-        part: 'id,replies,snippet',
-        videoId: 'DiKTifU1v1I',
-    }
-
-    service.commentThreads.list(request, (err, response) => {
-        if (err) return console.log('The API returned an error: ' + err)
-        const commentThreads = response.data.items
-        if (commentThreads.length == 0) {
-            console.log('No thread found.')
-        } else {
-            commentThreads.forEach((element) => {
-                console.log(
-                    `${element.snippet.topLevelComment.snippet.authorDisplayName} commented: ${element.snippet.topLevelComment.snippet.textDisplay}`
-                )
-            })
-        }
-    })
-}
-
+// Send message to chat
 const sendMessage = (message, chatId) => {
+    // Authorize without callback functions
     fs.readFile('credentials.json', (err, content) => {
         if (err) return console.log('Error loading client secret file:', err)
         const { client_secret, client_id, redirect_uris } = JSON.parse(content).installed
@@ -178,6 +166,7 @@ const sendMessage = (message, chatId) => {
 
             const service = google.youtube('v3')
 
+            // POST chat message request
             const request = {
                 auth: oAuth2Client,
                 part: ['snippet'],
@@ -192,6 +181,7 @@ const sendMessage = (message, chatId) => {
                 },
             }
 
+            // Send message
             service.liveChatMessages.insert(request, (err, response) => {
                 if (err) return console.log('The API returned an error: ' + err)
                 console.log(response.data)
@@ -200,6 +190,7 @@ const sendMessage = (message, chatId) => {
     })
 }
 
+// Get channel info
 const getChannel = (channelId) => {
     return new Promise(function (resolve, reject) {
         fs.readFile('credentials.json', (err, content) => {
@@ -224,10 +215,10 @@ const getChannel = (channelId) => {
                         console.log('No channel found.')
                     } else {
                         this.channel = channels[0]
-                        // console.log(`This channel's ID is ${channels[0].id}.
-                        //     Its title is ${channels[0].snippet.title},
-                        //     it has ${channels[0].statistics.viewCount} views and
-                        //     it has ${channels[0].statistics.subscriberCount} subscribers.`)
+                        console.log(`This channel's ID is ${channels[0].id}.
+                             Its title is ${channels[0].snippet.title},
+                             it has ${channels[0].statistics.viewCount} views and
+                             it has ${channels[0].statistics.subscriberCount} subscribers.`)
                         resolve(this)
                     }
                 })
@@ -236,12 +227,10 @@ const getChannel = (channelId) => {
     })
 }
 
-// getChannel()
-
-// start_function(getChannel)
+// Start chatbot
 start_function(getBroadcast)
-// start_function(getComments)
 
+// Display subscribercount for obs
 app.get('/', (req, res) => {
     const _channel = getChannel('UCbZRGXMhWPva6OZydKs70ng')
     setTimeout(function () {
