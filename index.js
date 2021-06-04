@@ -49,14 +49,14 @@ const getNewToken = (oAuth2Client, callback) => {
         access_type: 'offline',
         scope: SCOPES,
     })
-
+    
     console.log('Authorize this app by visiting this url:', authUrl)
-
+    
     const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout,
     })
-
+    
     rl.question('Enter the code from that page here: ', (code) => {
         rl.close()
         oAuth2Client.getToken(code, (err, token) => {
@@ -79,14 +79,14 @@ const getBroadcast = (auth) => {
     const request = {
         auth: auth,
         part: 'id, snippet, contentDetails, status',
-        id: '-WgXdONX-1k',
+        id: 'SHwKywDc978',
     }
 
     service.liveBroadcasts.list(request, (err, response) => {
         if (err) return console.log('The API returned an error: ' + err)
         const broadcast = response.data.items[0]
         console.log(`${broadcast.snippet.channelId} is livestreaming about ${broadcast.snippet.title}`)
-
+        
         // GET Chat Messages request
         const chatRequest = {
             auth: auth,
@@ -214,9 +214,9 @@ const getChannel = (channelId) => {
                     } else {
                         this.channel = channels[0]
                         console.log(`This channel's ID is ${channels[0].id}.
-                            Its title is ${channels[0].snippet.title},
-                            it has ${channels[0].statistics.viewCount} views and
-                            it has ${channels[0].statistics.subscriberCount} subscribers.`)
+                             Its title is ${channels[0].snippet.title},
+                             it has ${channels[0].statistics.viewCount} views and
+                             it has ${channels[0].statistics.subscriberCount} subscribers.`)
                         resolve(this)
                     }
                 })
