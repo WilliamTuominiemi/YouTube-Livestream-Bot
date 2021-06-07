@@ -107,7 +107,7 @@ const getBroadcast = (auth) => {
 
                 // Check if message is command and if it has already been processed
                 if (message.snippet.displayMessage.startsWith('/') && diffMins < 0.5) {
-                    commands(message.snippet.displayMessage, broadcast.snippet.liveChatId)
+                    commands(message.snippet.displayMessage, broadcast.snippet.liveChatId, message.authorDetails.displayName)
                 }
             })
             setTimeout(function(){ start_function(getBroadcast) }, 30000); // Check chat for commands every 30 seconds
@@ -116,55 +116,49 @@ const getBroadcast = (auth) => {
 }
 
 // Command logic
-const commands = (command, chatId) => {
+const commands = (command, chatId, user) => {
     const commands = [' /help', ' /stats', ' /dc']
     const _channel = getChannel('UCbZRGXMhWPva6OZydKs70ng') // Get channel information
 
-    console.log('includes roll ' + command.includes('roll'))
-    console.log('number ' + !isNaN(command.slice(command.length -1)))
-    console.log(command.slice(command.length -1))
-
-
     if(command.includes('/roll') && !isNaN(command.slice(command.length -1))) {
-        sendMessage(`${roll()}`, chatId)
-
-    }
-
-    switch (command) {
-        case '/help':
-            // Send list of commands
-            sendMessage(`Available commands: ${commands}`, chatId)
-            break
-        case '/stats':
-            // Send channel stats
-            setTimeout(function () {
-                sendMessage(
-                    `
-            Name: ${channel.snippet.title} • \n
-            Subscribers: ${channel.statistics.subscriberCount} • \n
-            Viewcount: ${channel.statistics.viewCount} • \n
-            Videos: ${channel.statistics.videoCount} \n
-            `,
-                    chatId
-                )
-            }, 3000)
-            break
-        case '/dc':
-            // Send discord server
-            setTimeout(function () {
-                sendMessage(`💬 ᴅɪꜱᴄᴏʀᴅ ꜱᴇʀᴠᴇʀ: https://shorturl.at/lmyLN`, chatId)
-            }, 3000)
-            break
-        case '/roll':
-            // Send discord server
-            setTimeout(function () {
-                sendMessage(`💬 ᴅɪꜱᴄᴏʀᴅ ꜱᴇʀᴠᴇʀ: https://shorturl.at/lmyLN`, chatId)
-            }, 3000)
-            break    
-        default:
-            // Not a valid command
-            console.log('invalid command')
-            break
+        sendMessage(`${user} rolled ${roll()}`, chatId)
+    }   else    {
+        switch (command) {
+            case '/help':
+                // Send list of commands
+                sendMessage(`Available commands: ${commands}`, chatId)
+                break
+            case '/stats':
+                // Send channel stats
+                setTimeout(function () {
+                    sendMessage(
+                        `
+                Name: ${channel.snippet.title} • \n
+                Subscribers: ${channel.statistics.subscriberCount} • \n
+                Viewcount: ${channel.statistics.viewCount} • \n
+                Videos: ${channel.statistics.videoCount} \n
+                `,
+                        chatId
+                    )
+                }, 3000)
+                break
+            case '/dc':
+                // Send discord server
+                setTimeout(function () {
+                    sendMessage(`💬 ᴅɪꜱᴄᴏʀᴅ ꜱᴇʀᴠᴇʀ: https://shorturl.at/lmyLN`, chatId)
+                }, 3000)
+                break
+            case '/roll':
+                // Send discord server
+                setTimeout(function () {
+                    sendMessage(`💬 ᴅɪꜱᴄᴏʀᴅ ꜱᴇʀᴠᴇʀ: https://shorturl.at/lmyLN`, chatId)
+                }, 3000)
+                break    
+            default:
+                // Not a valid command
+                console.log('invalid command')
+                break
+        }
     }
 }
 
