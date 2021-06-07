@@ -117,11 +117,26 @@ const getBroadcast = (auth) => {
 
 // Command logic
 const commands = (command, chatId, user) => {
-    const commands = [' /help', ' /stats', ' /dc']
-    const _channel = getChannel('UCbZRGXMhWPva6OZydKs70ng') // Get channel information
+    const commands = [' /help', ' /stats', ' /dc', ' /roll <number 0-10>', ' /statsFor <Channel ID>']
+    // const _channel = getChannel('UCbZRGXMhWPva6OZydKs70ng') // Get channel information
+
+    // - statsFor <channelId>, return basic stats
+    console.log(command.substring(9))
 
     if(command.includes('/roll') && !isNaN(command.slice(command.length -1))) {
         sendMessage(`${user} rolled ${roll()}`, chatId)
+    }   else if(command.startsWith('/statsFor'))   {
+        const _channel = getChannel(command.substring(9))
+        setTimeout(function () {
+            sendMessage(
+                `
+        Subscribers: ${channel.statistics.subscriberCount} • \n
+        Viewcount: ${channel.statistics.viewCount} • \n
+        Videos: ${channel.statistics.videoCount} \n
+        `,
+                chatId
+            )
+        }, 3000)    
     }   else    {
         switch (command) {
             case '/help':
@@ -130,6 +145,7 @@ const commands = (command, chatId, user) => {
                 break
             case '/stats':
                 // Send channel stats
+                const _channel = getChannel('UCbZRGXMhWPva6OZydKs70ng')
                 setTimeout(function () {
                     sendMessage(
                         `
