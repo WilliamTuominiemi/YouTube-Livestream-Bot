@@ -9,11 +9,12 @@ A chatbot for your YouTube livestream
 -   Subcount
 -   Commands
 
-    | Command  | Response                       |
-    | -------- | ------------------------------ |
-    | '/help'  | `Sends list of commands`       |
-    | '/stats' | `Sends channel stats`          |
-    | '/dc'    | `Sends link to discord server` |
+    | Command          | Response                       |
+    | ---------------- | ------------------------------ |
+    | `/help`          | 'Sends list of commands'       |
+    | `/stats`         | 'Sends channel stats'          |
+    | `/stats`         | 'Sends link to discord server' |
+    | `/roll <number>` | 'Rolls a number from 0-10'     |
 
 ## API Documentation
 

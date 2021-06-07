@@ -79,7 +79,7 @@ const getBroadcast = (auth) => {
     const request = {
         auth: auth,
         part: 'id, snippet, contentDetails, status',
-        id: 'SHwKywDc978',
+        id: 'C2HT_el1_aM',
     }
 
     service.liveBroadcasts.list(request, (err, response) => {
@@ -119,6 +119,17 @@ const getBroadcast = (auth) => {
 const commands = (command, chatId) => {
     const commands = [' /help', ' /stats', ' /dc']
     const _channel = getChannel('UCbZRGXMhWPva6OZydKs70ng') // Get channel information
+
+    console.log('includes roll ' + command.includes('roll'))
+    console.log('number ' + !isNaN(command.slice(command.length -1)))
+    console.log(command.slice(command.length -1))
+
+
+    if(command.includes('/roll') && !isNaN(command.slice(command.length -1))) {
+        sendMessage(`${roll()}`, chatId)
+
+    }
+
     switch (command) {
         case '/help':
             // Send list of commands
@@ -144,6 +155,12 @@ const commands = (command, chatId) => {
                 sendMessage(`💬 ᴅɪꜱᴄᴏʀᴅ ꜱᴇʀᴠᴇʀ: https://shorturl.at/lmyLN`, chatId)
             }, 3000)
             break
+        case '/roll':
+            // Send discord server
+            setTimeout(function () {
+                sendMessage(`💬 ᴅɪꜱᴄᴏʀᴅ ꜱᴇʀᴠᴇʀ: https://shorturl.at/lmyLN`, chatId)
+            }, 3000)
+            break    
         default:
             // Not a valid command
             console.log('invalid command')
@@ -213,16 +230,20 @@ const getChannel = (channelId) => {
                         console.log('No channel found.')
                     } else {
                         this.channel = channels[0]
-                        console.log(`This channel's ID is ${channels[0].id}.
-                             Its title is ${channels[0].snippet.title},
-                             it has ${channels[0].statistics.viewCount} views and
-                             it has ${channels[0].statistics.subscriberCount} subscribers.`)
+                        // console.log(`This channel's ID is ${channels[0].id}.
+                        //      Its title is ${channels[0].snippet.title},
+                        //      it has ${channels[0].statistics.viewCount} views and
+                        //      it has ${channels[0].statistics.subscriberCount} subscribers.`)
                         resolve(this)
                     }
                 })
             })
         })
     })
+}
+
+const roll = () => {
+    return Math.floor(Math.random() * 11); 
 }
 
 // Start chatbot
