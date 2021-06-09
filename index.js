@@ -117,16 +117,16 @@ const getBroadcast = (auth) => {
 
 // Command logic
 const commands = (command, chatId, user) => {
-    const commands = [' /help', ' /stats', ' /dc', ' /roll <number 0-10>', ' /statsFor <Channel ID>']
-    // const _channel = getChannel('UCbZRGXMhWPva6OZydKs70ng') // Get channel information
-
-    // - statsFor <channelId>, return basic stats
+    const commands = [' /help', ' /stats', ' /dc', ' /roll <number 0-10>', ' /statsFor <Channel ID>'] // List of all commands
+    // statsFor <channelId>, return basic stats
     console.log(command.substring(9))
 
-    if(command.includes('/roll') && !isNaN(command.slice(command.length -1))) {
+    if(command.includes('/roll') && !isNaN(command.slice(command.length -1))) { // check if command /roll in chat
+        // Send a number between 1-6
         sendMessage(`${user} rolled ${roll()}`, chatId)
-    }   else if(command.startsWith('/statsFor'))   {
-        const _channel = getChannel(command.substring(9))
+    }   else if(command.startsWith('/statsFor'))   { // check if command /statsFor in chat   
+        const _channel = getChannel(command.substring(9)) // Get channel id from chat message
+        // Send query channel stats
         setTimeout(function () {
             sendMessage(
                 `
@@ -163,13 +163,7 @@ const commands = (command, chatId, user) => {
                 setTimeout(function () {
                     sendMessage(`💬 ᴅɪꜱᴄᴏʀᴅ ꜱᴇʀᴠᴇʀ: https://shorturl.at/lmyLN`, chatId)
                 }, 3000)
-                break
-            case '/roll':
-                // Send discord server
-                setTimeout(function () {
-                    sendMessage(`💬 ᴅɪꜱᴄᴏʀᴅ ꜱᴇʀᴠᴇʀ: https://shorturl.at/lmyLN`, chatId)
-                }, 3000)
-                break    
+                break 
             default:
                 // Not a valid command
                 console.log('invalid command')
@@ -253,7 +247,8 @@ const getChannel = (channelId) => {
 }
 
 const roll = () => {
-    return Math.floor(Math.random() * 11); 
+    // Return number between 1 and 6
+    return Math.floor(((Math.random() * 6) + 1)); 
 }
 
 // Start chatbot

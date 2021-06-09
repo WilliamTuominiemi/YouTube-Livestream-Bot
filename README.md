@@ -13,7 +13,7 @@ A chatbot for your YouTube livestream
     | ---------------------- | ------------------------------ |
     | `/help`                | 'Sends list of commands'       |
     | `/stats`               | 'Sends channel stats'          |
-    | `/stats`               | 'Sends link to discord server' |
+    | `/dc`                  | 'Sends link to discord server' |
     | `/roll <number>`       | 'Rolls a number from 0-10'     |
     | `/stasFor <ChannelID>` | 'Sends query channel stats'    |
 
