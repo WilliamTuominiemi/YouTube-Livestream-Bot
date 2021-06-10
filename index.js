@@ -8,7 +8,8 @@ app.set('view engine', 'ejs')
 
 app.use(express.static('public'))
 
-app.use(bodyParser.json())
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 const fs = require('fs')
 
@@ -22,6 +23,9 @@ const SCOPES = ['https://www.googleapis.com/auth/youtube.force-ssl']
 // created automatically when the authorization flow completes for the first
 // time.
 const TOKEN_PATH = 'token.json'
+
+let channelID;
+let streamID;
 
 const start_function = (callback) => {
     // Load client secrets from a local file.
@@ -79,7 +83,7 @@ const getBroadcast = (auth) => {
     const request = {
         auth: auth,
         part: 'id, snippet, contentDetails, status',
-        id: 'C2HT_el1_aM',
+        id: streamID,
     }
 
     service.liveBroadcasts.list(request, (err, response) => {
@@ -145,7 +149,7 @@ const commands = (command, chatId, user) => {
                 break
             case '/stats':
                 // Send channel stats
-                const _channel = getChannel('UCbZRGXMhWPva6OZydKs70ng')
+                const _channel = getChannel(channelID)
                 setTimeout(function () {
                     sendMessage(
                         `
@@ -252,13 +256,25 @@ const roll = () => {
 }
 
 // Start chatbot
-start_function(getBroadcast)
+// start_function(getBroadcast)
 
 // Display subscribercount for obs
 app.get('/', (req, res) => {
-    const _channel = getChannel('UCbZRGXMhWPva6OZydKs70ng')
+    res.render('index')
+})
+
+app.post('/', (req, res) => {
+    channelID = req.body.channel
+    streamID = req.body.stream
     setTimeout(function () {
-        res.render('subscriberCount', { subscribers: channel.statistics.subscriberCount })
+        start_function(getBroadcast)
+    }, 1000)
+})
+
+app.get('/subcount', (req, res) => {
+    setTimeout(function () {
+        res.render('index', { subscribers: channel.statistics.subscriberCount })
+        // console.log(channel)
     }, 1000)
 })
 
