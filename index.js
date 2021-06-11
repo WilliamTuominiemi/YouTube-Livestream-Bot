@@ -287,7 +287,7 @@ app.post('/', (req, res) => {
 
     setTimeout(function () {
         start_function(getBroadcast)
-        res.redirect('/subcount')
+        res.render('token')
     }, 1000)
 })
 
