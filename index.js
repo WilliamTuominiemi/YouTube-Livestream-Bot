@@ -268,13 +268,16 @@ app.post('/', (req, res) => {
     streamID = req.body.stream
     setTimeout(function () {
         start_function(getBroadcast)
+        res.redirect('/subcount')
     }, 1000)
 })
 
 app.get('/subcount', (req, res) => {
     setTimeout(function () {
-        res.render('index', { subscribers: channel.statistics.subscriberCount })
-        // console.log(channel)
+        getChannel(channelID)
+        setTimeout(function () {
+            res.render('subscriberCount', { subscribers: channel.statistics.subscriberCount })
+        }, 1000)
     }, 1000)
 })
 
