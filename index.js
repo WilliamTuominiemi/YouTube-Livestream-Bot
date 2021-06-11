@@ -8,7 +8,7 @@ app.set('view engine', 'ejs')
 
 app.use(express.static('public'))
 
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 const fs = require('fs')
@@ -257,12 +257,34 @@ const roll = () => {
 
 // Display subscribercount for obs
 app.get('/', (req, res) => {
-    res.render('index')
+    try {
+        if (fs.existsSync('./form_token.json')) {
+            fs.readFile('form_token.json', (err, data) => {
+                if (err) throw err
+                res.render('index', {data: JSON.parse(data)})
+            })
+        } else {
+            res.render('index')
+        }
+      } catch(err) {
+        console.error(err)
+      }
 })
 
 app.post('/', (req, res) => {
     channelID = req.body.channel
     streamID = req.body.stream
+
+    const obj = {
+        "channelID": channelID, 
+        "streamID": streamID
+    }
+    
+    fs.writeFile('form_token.json', JSON.stringify(obj), (err) => {
+        if (err) throw err
+        console.log('form token stored')
+    })
+
     setTimeout(function () {
         start_function(getBroadcast)
         res.redirect('/subcount')
@@ -277,7 +299,7 @@ app.get('/subcount', (req, res) => {
                 res.render('subscriberCount', { subscribers: channel.statistics.subscriberCount })
             }, 1000)
         }, 1000)    
-    }   else    res.redirect('/')
+    } else res.redirect('/')
 })
 
 app.listen(port, () => {
