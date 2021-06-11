@@ -238,10 +238,6 @@ const getChannel = (channelId) => {
                         console.log('No channel found.')
                     } else {
                         this.channel = channels[0]
-                        // console.log(`This channel's ID is ${channels[0].id}.
-                        //      Its title is ${channels[0].snippet.title},
-                        //      it has ${channels[0].statistics.viewCount} views and
-                        //      it has ${channels[0].statistics.subscriberCount} subscribers.`)
                         resolve(this)
                     }
                 })
@@ -250,54 +246,51 @@ const getChannel = (channelId) => {
     })
 }
 
-const roll = () => {
-    // Return number between 1 and 6
-    return Math.floor(((Math.random() * 6) + 1)); 
-}
+// Return number between 1 and 6
+const roll = () => { return Math.floor(((Math.random() * 6) + 1)); }
 
-// Display subscribercount for obs
+// Render index page with the form
 app.get('/', (req, res) => {
     try {
-        if (fs.existsSync('./form_token.json')) {
-            fs.readFile('form_token.json', (err, data) => {
+        if (fs.existsSync('./form_token.json')) { // Check if token exists
+            fs.readFile('form_token.json', (err, data) => { // Read data from token
                 if (err) throw err
-                res.render('index', {data: JSON.parse(data)})
+                res.render('index', {data: JSON.parse(data)}) // Render page with the data from the token 
             })
-        } else {
-            res.render('index')
-        }
-      } catch(err) {
-        console.error(err)
-      }
+        } else res.render('index') // If it doesn't exist, just render, don't read the token
+    } catch(err) { console.error(err) }
 })
 
 app.post('/', (req, res) => {
-    channelID = req.body.channel
+    // Define global variables
+    channelID = req.body.channel 
     streamID = req.body.stream
 
+    // Form token JSON object
     const obj = {
         "channelID": channelID, 
         "streamID": streamID
     }
     
+    // Create a token for form so that you don't have to always type everything again
     fs.writeFile('form_token.json', JSON.stringify(obj), (err) => {
         if (err) throw err
         console.log('form token stored')
     })
 
+    // Start chatbot
     setTimeout(function () {
         start_function(getBroadcast)
         res.render('token')
     }, 1000)
 })
 
+// Show subcount for OBS overlay
 app.get('/subcount', (req, res) => {
-    if(channelID)   {
+    if(channelID)   { // If defined
         setTimeout(() => {
-            getChannel(channelID)
-            setTimeout(() => {
-                res.render('subscriberCount', { subscribers: channel.statistics.subscriberCount })
-            }, 1000)
+            getChannel(channelID) // Get channel data by id put in form
+            setTimeout(() => { res.render('subscriberCount', { subscribers: channel.statistics.subscriberCount }) }, 1000) 
         }, 1000)    
     } else res.redirect('/')
 })
