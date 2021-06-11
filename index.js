@@ -121,7 +121,7 @@ const getBroadcast = (auth) => {
 
 // Command logic
 const commands = (command, chatId, user) => {
-    const commands = [' /help', ' /stats', ' /dc', ' /roll <number 0-10>', ' /statsFor <Channel ID>'] // List of all commands
+    const commands = [' /help', ' /stats', ' /dc', ' /roll <number 1-6>', ' /statsFor <Channel ID>'] // List of all commands
     // statsFor <channelId>, return basic stats
     console.log(command.substring(9))
 
@@ -255,9 +255,6 @@ const roll = () => {
     return Math.floor(((Math.random() * 6) + 1)); 
 }
 
-// Start chatbot
-// start_function(getBroadcast)
-
 // Display subscribercount for obs
 app.get('/', (req, res) => {
     res.render('index')
@@ -273,12 +270,14 @@ app.post('/', (req, res) => {
 })
 
 app.get('/subcount', (req, res) => {
-    setTimeout(function () {
-        getChannel(channelID)
-        setTimeout(function () {
-            res.render('subscriberCount', { subscribers: channel.statistics.subscriberCount })
-        }, 1000)
-    }, 1000)
+    if(channelID)   {
+        setTimeout(() => {
+            getChannel(channelID)
+            setTimeout(() => {
+                res.render('subscriberCount', { subscribers: channel.statistics.subscriberCount })
+            }, 1000)
+        }, 1000)    
+    }   else    res.redirect('/')
 })
 
 app.listen(port, () => {
