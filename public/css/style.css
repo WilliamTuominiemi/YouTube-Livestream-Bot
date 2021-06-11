@@ -1,10 +1,10 @@
-h1 {
-    font-family: Arial;
-    font-size: 100;
-    text-align: center;
-    color: white;
-}
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@200&display=swap');
 
 body {
-    background-color: #00b140;
+    text-align: center;
+}
+
+p,
+input {
+    font-family: 'Source Code Pro', monospace;
 }

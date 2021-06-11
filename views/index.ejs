@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>  </title>
-    </head>
+    <%- include("./partials/head.ejs") %>
+
     <body>
         <form action="/" method="post">
+            <p> Please enter your YouTube channel ID and your livestreams ID</p>
             <% if(typeof data !== 'undefined') { %>
                 <input type="text" id="channel" name="channel" placeholder="ChannelID" value="<%= data.channelID %>"><br>
                 <input type="text" id="stream" name="stream" placeholder="StreamID" value="<%= data.streamID %>"><br><br>
@@ -12,7 +12,7 @@
                 <input type="text" id="channel" name="channel" placeholder="ChannelID"><br>
                 <input type="text" id="stream" name="stream" placeholder="StreamID"><br><br>
             <% } %>
-            <input type="submit" value="Submit">
+            <input type="submit" value="NEXT">
         </form> 
     </body>
 </html>
