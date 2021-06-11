@@ -1,20 +1,16 @@
 const express = require('express')
-const bodyParser = require('body-parser')
+const fs = require('fs')
+const readline = require('readline')
+const { google } = require('googleapis')
 
 const app = express()
 const port = 3000
 
 app.set('view engine', 'ejs')
-
 app.use(express.static('public'))
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
-const fs = require('fs')
-
-const readline = require('readline')
-const { google } = require('googleapis')
 
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/youtube.force-ssl']
@@ -24,6 +20,7 @@ const SCOPES = ['https://www.googleapis.com/auth/youtube.force-ssl']
 // time.
 const TOKEN_PATH = 'token.json'
 
+// Global variables
 let channelID;
 let streamID;
 
@@ -281,7 +278,7 @@ app.post('/', (req, res) => {
     // Start chatbot
     setTimeout(function () {
         start_function(getBroadcast)
-        res.render('token')
+        res.render('instructions')
     }, 1000)
 })
 

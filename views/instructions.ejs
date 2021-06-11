@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <%- include("./partials/head.ejs") %>
+
+    <body>
+        <div class="content">
+            <ol>
+                <li>You need to have downloaded the <b>credentials.JSON</b> from your Google Cloud Platform console, and placed them in the root</li>
+                <li>If you don't already have a <b>token.JSON</b>, go to console and follow the steps there, when token has been created or you already have one, press the button below. </li>
+                <li>When you press the button the <b>BOT STARTS</b> and you subscriber count will show up, this you can display in your OBS.</li>
+              </ol>  
+            <form action="/subcount" method="get">
+                <input type="submit" value="NEXT">
+            </form>
+        </div>
+        
+        <%- include("./partials/footer.ejs") %>
+    </body>
+</html>
