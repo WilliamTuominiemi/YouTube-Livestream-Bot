@@ -118,17 +118,15 @@ const getBroadcast = (auth) => {
 
 // Command logic
 const commands = (command, chatId, user) => {
-    const commands = [' /help', ' /stats', ' /dc', ' /roll <number 1-6>', ' /statsFor <Channel ID>'] // List of all commands
+    const commands = ' /help, /stats, /dc, /roll <number 1-6>, /statsFor <Channel ID>' // List of all commands
     // statsFor <channelId>, return basic stats
-    console.log(command.substring(9))
-
     if(command.includes('/roll') && !isNaN(command.slice(command.length -1))) { // check if command /roll in chat
         // Send a number between 1-6
         sendMessage(`${user} rolled ${roll()}`, chatId)
     }   else if(command.startsWith('/statsFor'))   { // check if command /statsFor in chat   
-        const _channel = getChannel(command.substring(9)) // Get channel id from chat message
+        getChannel(command.substring(9)) // Get channel id from chat message
         // Send query channel stats
-        setTimeout(function () {
+        setTimeout(() => {
             sendMessage(
                 `
         Subscribers: ${channel.statistics.subscriberCount} • \n
@@ -146,8 +144,8 @@ const commands = (command, chatId, user) => {
                 break
             case '/stats':
                 // Send channel stats
-                const _channel = getChannel(channelID)
-                setTimeout(function () {
+                getChannel(channelID)
+                setTimeout(() => {
                     sendMessage(
                         `
                 Name: ${channel.snippet.title} • \n
@@ -161,9 +159,7 @@ const commands = (command, chatId, user) => {
                 break
             case '/dc':
                 // Send discord server
-                setTimeout(function () {
-                    sendMessage(`💬 ᴅɪꜱᴄᴏʀᴅ ꜱᴇʀᴠᴇʀ: https://shorturl.at/lmyLN`, chatId)
-                }, 3000)
+                sendMessage(`💬 ᴅɪꜱᴄᴏʀᴅ ꜱᴇʀᴠᴇʀ: https://shorturl.at/lmyLN`, chatId)
                 break 
             default:
                 // Not a valid command
