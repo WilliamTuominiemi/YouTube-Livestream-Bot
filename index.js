@@ -24,7 +24,7 @@ const TOKEN_PATH = 'token.json'
 let channelID;
 let streamID;
 
-const start_function = (callback) => {
+const startFunction = (callback) => {
     // Load client secrets from a local file.
     fs.readFile('credentials.json', (err, content) => {
         if (err) return console.log('Error loading client secret file:', err)
@@ -111,7 +111,7 @@ const getBroadcast = (auth) => {
                     commands(message.snippet.displayMessage, broadcast.snippet.liveChatId, message.authorDetails.displayName)
                 }
             })
-            setTimeout(function(){ start_function(getBroadcast) }, 30000); // Check chat for commands every 30 seconds
+            setTimeout(() => { startFunction(getBroadcast) }, 30000); // Check chat for commands every 30 seconds
         })
     })
 }
@@ -272,8 +272,8 @@ app.post('/', (req, res) => {
     })
 
     // Start chatbot
-    setTimeout(function () {
-        start_function(getBroadcast)
+    setTimeout(() => {
+        startFunction(getBroadcast)
         res.render('instructions')
     }, 1000)
 })
