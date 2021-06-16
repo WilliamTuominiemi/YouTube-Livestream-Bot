@@ -7,13 +7,21 @@
             <img src="https://play-lh.googleusercontent.com/lMoItBgdPPVDJsNOVtP26EKHePkwBg-PkuY9NOrc-fumRtTFP4XhpUNk_22syN4Datc" height="200px">
             <form action="/" method="post">
                 <p> Please enter your YouTube channel ID and your livestream ID</p>
-                <% if(typeof data !== 'undefined') { %>
-                    <input type="text" id="channel" name="channel" placeholder="ChannelID" value="<%= data.channelID %>"><br>
-                    <input type="text" id="stream" name="stream" placeholder="StreamID" value="<%= data.streamID %>"><br><br>
-                <% } else { %>
-                    <input type="text" id="channel" name="channel" placeholder="ChannelID"><br>
-                    <input type="text" id="stream" name="stream" placeholder="StreamID"><br><br>
-                <% } %>
+                    <input 
+                        type="text" 
+                        id="channel" 
+                        name="channel" 
+                        placeholder="ChannelID" 
+                        <% if(typeof data !== 'undefined') { %> value="<%= data.channelID %>" <% } %>
+                    > <br>
+
+                    <input 
+                        type="text" 
+                        id="stream" 
+                        name="stream" 
+                        placeholder="StreamID" 
+                        <% if(typeof data !== 'undefined') { %> value="<%= data.streamID %>" <% } %>
+                    > <br><br>      
                 <input type="submit" value="NEXT">
             </form>
         </div>
