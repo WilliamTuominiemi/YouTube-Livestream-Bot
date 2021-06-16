@@ -85,6 +85,7 @@ const getBroadcast = (auth) => {
 
     service.liveBroadcasts.list(request, (err, response) => {
         if (err) return console.log('The API returned an error: ' + err)
+
         const broadcast = response.data.items[0]
         console.log(`${broadcast.snippet.channelId} is livestreaming about ${broadcast.snippet.title}`)
         
@@ -104,7 +105,6 @@ const getBroadcast = (auth) => {
                 const sentAt = new Date(message.snippet.publishedAt)
                 const diff = new Date() - sentAt
                 var diffMins = Math.round(((diff % 86400000) % 3600000) / 60000)
-                // console.log(`${message.authorDetails.displayName} said "${message.snippet.displayMessage}" ${diffMins} minutes ago`
 
                 // Check if message is command and if it has already been processed
                 if (message.snippet.displayMessage.startsWith('/') && diffMins < 0.5) {
@@ -174,8 +174,10 @@ const sendMessage = (message, chatId) => {
     // Authorize without callback functions
     fs.readFile('credentials.json', (err, content) => {
         if (err) return console.log('Error loading client secret file:', err)
+
         const { client_secret, client_id, redirect_uris } = JSON.parse(content).installed
         const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0])
+
         fs.readFile(TOKEN_PATH, (err, token) => {
             if (err) return getNewToken(oAuth2Client, callback)
             oAuth2Client.setCredentials(JSON.parse(token))
@@ -211,8 +213,10 @@ const getChannel = (channelId) => {
     return new Promise(function (resolve, reject) {
         fs.readFile('credentials.json', (err, content) => {
             if (err) return console.log('Error loading client secret file:', err)
+
             const { client_secret, client_id, redirect_uris } = JSON.parse(content).installed
             const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0])
+
             fs.readFile(TOKEN_PATH, (err, token) => {
                 if (err) return getNewToken(oAuth2Client, callback)
                 oAuth2Client.setCredentials(JSON.parse(token))
